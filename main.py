@@ -6,15 +6,47 @@ from PyQt5.uic import loadUi
 import zipfile
 import importlib.util
 import json
+import suscriber
 
 class TestApp(QMainWindow):
     def __init__(self):
         super(TestApp, self).__init__()
+
+        # crear la instancia a la clase de suscriber que se encuentra en el mismo directorio que main.py
+        self.suscriber = suscriber.Suscriber()
+        # para usar el consoleLog en suscriber.py
+        self.suscriber.consoleLog = self.consoleLog
+
         loadUi("mainWindow.ui", self) # Cargar la interfaz desde el archivo mainWindow.ui
+        self.connectButton.clicked.connect(self.connect_with_broker)
         self.folderButton.clicked.connect(self.select_folder)
         self.zipListWidget.itemClicked.connect(self.show_Test_Resume)
         self.startButton.clicked.connect(self.start_test)
-        
+
+    def connect_with_broker(self):
+        # Imprime en consola que se esta conetaando con el broker
+        self.consoleLog("Conectando con el broker...\n")
+        # Conecta con el broker
+        result = self.suscriber.checkBrokerAddress(self.brokerAddressLineEdit.text())
+        # si se ha podido conectar con el broker
+        if result:
+            #imprime en consola que se ha conectado con el broker
+            self.consoleLog("Conectado con el broker\n")
+            #activa el boton de seleccionar carpeta
+            self.folderButton.setEnabled(True)
+            
+        else:
+            #imprime en consola que no se ha podido conectar con el broker y se limpian los campos
+            self.folderButton.setEnabled(False)
+            self.zipListWidget.setEnabled(False)
+            self.folderLineEdit.setText("")
+            self.zipListWidget.clear()
+            self.consoleLog("No se ha podido conectar con el broker\n")
+
+    def consoleLog(self, string):
+        print(string)
+        self.traceTextEdit.insertPlainText(string)
+
     def select_folder(self):
         folder_path = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta") # Abrir diálogo para seleccionar carpeta
         self.folderLineEdit.setText(folder_path)
@@ -58,18 +90,25 @@ class TestApp(QMainWindow):
         # Abrir el archivo ZIP
         with zipfile.ZipFile(zip_path, "r") as zip_file:
             # Extraer el archivo process.py del ZIP
-            print(f"Leyendo process de {zip_path}...")
-            self.traceTextEdit.insertPlainText(f"Leyendo process de {zip_path}...\n")
+            self.consoleLog(f"Leyendo process de {zip_path}...\n")
             zip_file.extract("process.py")
 
         # Cargar el módulo process.py
-        spec = importlib.util.spec_from_file_location("process", "process.py")
-        process_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(process_module)
-
+        self.process_module = None
+        try:
+            spec = importlib.util.spec_from_file_location("process", "process.py")
+            self.process_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(self.process_module)
+        except Exception as e:
+            print("Error al cargar el módulo process.py:", e)
+            return "", []
+        
+        # Paso la instancia de la clase TestApp al modulo process.py
+        self.process_module.app = self
+        
         # Obtener los pasos del proceso de prueba
-        description = getattr(process_module, "description", "")
-        steps = process_module.steps
+        description = getattr(self.process_module, "description", "")
+        steps = self.process_module.steps
 
         return description, steps
         
@@ -78,9 +117,9 @@ class TestApp(QMainWindow):
         if selected_item:
             zip_file = selected_item.text()
             zip_path = os.path.join(self.folderLineEdit.text(), zip_file)
-            self.traceTextEdit.insertPlainText(f"Iniciando prueba: {zip_file}\n")
+            self.consoleLog(f"Iniciando prueba: {zip_file}\n")
             # Lógica para iniciar la prueba con el archivo process.py
-            # ... (Aquí se debe implementar la lógica para realizar la prueba con el archivo process.py y actualizar las trazas en el cuadro de texto traceTextEdit)
+            self.process_module.run()
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)
