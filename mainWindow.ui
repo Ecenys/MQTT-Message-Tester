@@ -1,83 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
   <class>TestApp</class>
-  <widget class="QWidget" name="TestApp">
-    <property name="geometry">
-      <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>800</width>
-        <height>600</height>
-      </rect>
-    </property>
-    <property name="windowTitle">
-      <string>Test App</string>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-        <widget class="QPushButton" name="pushButtonDirectory">
-          <property name="text">
-            <string>Seleccionar Carpeta</string>
-          </property>
-        </widget>
-      </item>
-      <item>
-        <widget class="QLineEdit" name="lineEditDirectory">
-          <property name="readOnly">
-            <bool>true</bool>
-          </property>
-        </widget>
-      </item>
-      <item>
-        <widget class="QListWidget" name="listWidgetFiles">
-          <property name="alternatingRowColors">
-            <bool>true</bool>
-          </property>
-        </widget>
-      </item>
-      <item>
-        <widget class="QLabel" name="labelSteps">
-          <property name="text">
-            <string>Pasos:</string>
-          </property>
-        </widget>
-      </item>
-      <item>
-        <widget class="QTextEdit" name="textEditSteps">
-          <property name="readOnly">
-            <bool>true</bool>
-          </property>
-        </widget>
-      </item>
-      <item>
-        <widget class="QPushButton" name="pushButtonStartTest">
-          <property name="text">
-            <string>Iniciar Prueba</string>
-          </property>
-        </widget>
-      </item>
-    </layout>
+  <widget class="QMainWindow" name="TestApp">
+    <widget class="QWidget" name="centralWidget">
+      <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+              <widget class="QLabel" name="folderLabel">
+                <property name="text">
+                  <string>Seleccionar Carpeta:</string>
+                </property>
+              </widget>
+            </item>
+            <item>
+              <widget class="QLineEdit" name="folderLineEdit">
+                <property name="enabled">
+                  <bool>false</bool>
+                </property>
+              </widget>
+            </item>
+            <item>
+              <widget class="QPushButton" name="folderButton">
+                <property name="text">
+                  <string>...</string>
+                </property>
+              </widget>
+            </item>
+          </layout>
+        </item>
+        <item>
+          <widget class="QListWidget" name="zipListWidget">
+            <property name="enabled">
+              <bool>false</bool>
+            </property>
+          </widget>
+        </item>
+        <item>
+          <widget class="QTextEdit" name="stepTextEdit">
+            <property name="readOnly">
+              <bool>true</bool>
+            </property>
+          </widget>
+        </item>
+        <item>
+          <layout class="QHBoxLayout" name="traceLayout">
+            <item>
+              <widget class="QLabel" name="traceLabel">
+                <property name="text">
+                  <string>Trazas:</string>
+                </property>
+              </widget>
+            </item>
+            <item>
+              <widget class="QTextEdit" name="traceTextEdit">
+                <property name="readOnly">
+                  <bool>true</bool>
+                </property>
+              </widget>
+            </item>
+          </layout>
+        </item>
+        <item>
+          <widget class="QPushButton" name="startButton">
+            <property name="text">
+              <string>Iniciar Prueba</string>
+            </property>
+            <property name="enabled">
+              <bool>false</bool>
+            </property>
+          </widget>
+        </item>
+      </layout>
+    </widget>
+    <widget class="QStatusBar" name="statusbar"/>
   </widget>
-  <customwidgets>
-    <customwidget>
-      <class>QListWidgetItem</class>
-      <extends>QWidget</extends>
-      <header>QListWidgetItem</header>
-    </customwidget>
-  </customwidgets>
   <resources/>
-  <connections>
-    <connection>
-      <sender>pushButtonDirectory</sender>
-      <signal>clicked()</signal>
-      <receiver>lineEditDirectory</receiver>
-      <slot>clear()</slot>
-    </connection>
-    <connection>
-      <sender>pushButtonDirectory</sender>
-      <signal>clicked()</signal>
-      <receiver>TestApp</receiver>
-      <slot>on_pushButtonDirectory_clicked()</slot>
-    </connection>
-  </connections>
+  <connections/>
 </ui>
