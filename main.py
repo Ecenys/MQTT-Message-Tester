@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import Qt
 from PyQt5.uic import loadUi
 import zipfile
+import importlib.util
 import json
 
 class TestApp(QMainWindow):
@@ -11,7 +12,7 @@ class TestApp(QMainWindow):
         super(TestApp, self).__init__()
         loadUi("mainWindow.ui", self) # Cargar la interfaz desde el archivo mainWindow.ui
         self.folderButton.clicked.connect(self.select_folder)
-        self.zipListWidget.itemClicked.connect(self.show_steps)
+        self.zipListWidget.itemClicked.connect(self.show_Test_Resume)
         self.startButton.clicked.connect(self.start_test)
         
     def select_folder(self):
@@ -34,36 +35,50 @@ class TestApp(QMainWindow):
             self.zipListWidget.setEnabled(False)
             self.startButton.setEnabled(False)
         
-    def show_steps(self, item):
+    def show_Test_Resume(self, item):
+        description = ""
+        testResume = ""
         zip_file = item.text()
         zip_path = os.path.join(self.folderLineEdit.text(), zip_file)
-        steps = self.read_zip_steps(zip_path)
-        self.stepTextEdit.setPlainText(steps)
+        description, stepsList = self.read_zip_data(zip_path)
+        if not description:
+            description = ""
+        else:
+            testResume = description
+        for step in stepsList:
+            for key, value in step.items():
+                if key == "name":
+                    testResume += f"\n{value}"
+                elif key == "description":
+                    testResume += f": {value}"            
         
-    def read_zip_steps(self, zip_path):
-        steps = ""
-        try:
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                for file_name in zip_ref.namelist():
-                    if file_name.endswith('.json') or file_name.endswith('.cbor'): # Leer archivos .json o .cbor
-                        with zip_ref.open(file_name) as file:
-                            data = file.read()
-                            # Decodificar archivo y obtener información de los pasos del test
-                            # (asumiendo que los archivos contienen un diccionario con la información de los pasos)
-                            step_data = json.loads(data)
-                            steps += f"Nombre: {step_data['nombre']}\n"
-                            steps += f"Pasos: {step_data['pasos']}\n\n"
-        except Exception as e:
-            print("Error al leer archivos del zip:", e)
-        return steps
+        self.stepTextEdit.setPlainText(testResume)
+        
+    def read_zip_data(self, zip_path):
+        # Abrir el archivo ZIP
+        with zipfile.ZipFile(zip_path, "r") as zip_file:
+            # Extraer el archivo process.py del ZIP
+            print(f"Leyendo process de {zip_path}...")
+            self.traceTextEdit.insertPlainText(f"Leyendo process de {zip_path}...\n")
+            zip_file.extract("process.py")
+
+        # Cargar el módulo process.py
+        spec = importlib.util.spec_from_file_location("process", "process.py")
+        process_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(process_module)
+
+        # Obtener los pasos del proceso de prueba
+        description = getattr(process_module, "description", "")
+        steps = process_module.steps
+
+        return description, steps
         
     def start_test(self):
         selected_item = self.zipListWidget.currentItem()
         if selected_item:
             zip_file = selected_item.text()
             zip_path = os.path.join(self.folderLineEdit.text(), zip_file)
-            self.traceTextEdit.clear()
-            self.traceTextEdit.appendPlainText(f"Iniciando prueba: {zip_file}")
+            self.traceTextEdit.insertPlainText(f"Iniciando prueba: {zip_file}\n")
             # Lógica para iniciar la prueba con el archivo process.py
             # ... (Aquí se debe implementar la lógica para realizar la prueba con el archivo process.py y actualizar las trazas en el cuadro de texto traceTextEdit)
         
