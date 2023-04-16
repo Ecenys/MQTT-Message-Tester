@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+  <class>TestApp</class>
+  <widget class="QWidget" name="TestApp">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>800</width>
+        <height>600</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Test App</string>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+        <widget class="QPushButton" name="pushButtonDirectory">
+          <property name="text">
+            <string>Seleccionar Carpeta</string>
+          </property>
+        </widget>
+      </item>
+      <item>
+        <widget class="QLineEdit" name="lineEditDirectory">
+          <property name="readOnly">
+            <bool>true</bool>
+          </property>
+        </widget>
+      </item>
+      <item>
+        <widget class="QListWidget" name="listWidgetFiles">
+          <property name="alternatingRowColors">
+            <bool>true</bool>
+          </property>
+        </widget>
+      </item>
+      <item>
+        <widget class="QLabel" name="labelSteps">
+          <property name="text">
+            <string>Pasos:</string>
+          </property>
+        </widget>
+      </item>
+      <item>
+        <widget class="QTextEdit" name="textEditSteps">
+          <property name="readOnly">
+            <bool>true</bool>
+          </property>
+        </widget>
+      </item>
+      <item>
+        <widget class="QPushButton" name="pushButtonStartTest">
+          <property name="text">
+            <string>Iniciar Prueba</string>
+          </property>
+        </widget>
+      </item>
+    </layout>
+  </widget>
+  <customwidgets>
+    <customwidget>
+      <class>QListWidgetItem</class>
+      <extends>QWidget</extends>
+      <header>QListWidgetItem</header>
+    </customwidget>
+  </customwidgets>
+  <resources/>
+  <connections>
+    <connection>
+      <sender>pushButtonDirectory</sender>
+      <signal>clicked()</signal>
+      <receiver>lineEditDirectory</receiver>
+      <slot>clear()</slot>
+    </connection>
+    <connection>
+      <sender>pushButtonDirectory</sender>
+      <signal>clicked()</signal>
+      <receiver>TestApp</receiver>
+      <slot>on_pushButtonDirectory_clicked()</slot>
+    </connection>
+  </connections>
+</ui>
