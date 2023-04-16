@@ -1,80 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-  <class>TestApp</class>
-  <widget class="QMainWindow" name="TestApp">
-    <widget class="QWidget" name="centralWidget">
-      <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-              <widget class="QLabel" name="folderLabel">
-                <property name="text">
-                  <string>Seleccionar Carpeta:</string>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <widget class="QLineEdit" name="folderLineEdit">
-                <property name="enabled">
-                  <bool>false</bool>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <widget class="QPushButton" name="folderButton">
-                <property name="text">
-                  <string>...</string>
-                </property>
-              </widget>
-            </item>
-          </layout>
-        </item>
-        <item>
-          <widget class="QListWidget" name="zipListWidget">
-            <property name="enabled">
-              <bool>false</bool>
-            </property>
-          </widget>
-        </item>
-        <item>
-          <widget class="QTextEdit" name="stepTextEdit">
-            <property name="readOnly">
-              <bool>true</bool>
-            </property>
-          </widget>
-        </item>
-        <item>
-          <layout class="QHBoxLayout" name="traceLayout">
-            <item>
-              <widget class="QLabel" name="traceLabel">
-                <property name="text">
-                  <string>Trazas:</string>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <widget class="QTextEdit" name="traceTextEdit">
-                <property name="readOnly">
-                  <bool>true</bool>
-                </property>
-              </widget>
-            </item>
-          </layout>
-        </item>
-        <item>
-          <widget class="QPushButton" name="startButton">
-            <property name="text">
-              <string>Iniciar Prueba</string>
-            </property>
-            <property name="enabled">
-              <bool>false</bool>
-            </property>
-          </widget>
-        </item>
-      </layout>
-    </widget>
-    <widget class="QStatusBar" name="statusbar"/>
+ <class>TestApp</class>
+ <widget class="QMainWindow" name="TestApp">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>318</width>
+    <height>686</height>
+   </rect>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Broker:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="connectButton">
+        <property name="text">
+         <string>Connect</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="folderLabel">
+        <property name="text">
+         <string>Folder:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="folderLineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="folderButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Select Folder</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QListWidget" name="zipListWidget">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="stepTextEdit">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="traceLayout">
+      <item>
+       <widget class="QLabel" name="traceLabel">
+        <property name="text">
+         <string>Trazas:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="traceTextEdit">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QPushButton" name="startButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Iniciar Prueba</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
-  <resources/>
-  <connections/>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>
