@@ -24,6 +24,7 @@ class TestApp(QMainWindow):
         self.startButton.clicked.connect(self.start_test)
 
     def connect_with_broker(self):
+        self.clear()
         # Imprime en consola que se esta conetaando con el broker
         self.consoleLog("Conectando con el broker...\n")
         # Conecta con el broker
@@ -36,12 +37,15 @@ class TestApp(QMainWindow):
             self.folderButton.setEnabled(True)
             
         else:
-            #imprime en consola que no se ha podido conectar con el broker y se limpian los campos
-            self.folderButton.setEnabled(False)
-            self.zipListWidget.setEnabled(False)
-            self.folderLineEdit.setText("")
-            self.zipListWidget.clear()
+            #imprime en consola que no se ha podido conectar con el broker 
             self.consoleLog("No se ha podido conectar con el broker\n")
+
+    def clear(self):
+        self.folderButton.setEnabled(False)
+        self.zipListWidget.setEnabled(False)
+        self.folderLineEdit.setText("")
+        self.zipListWidget.clear()
+        self.traceTextEdit.clear()
 
     def consoleLog(self, string):
         print(string)
@@ -119,7 +123,7 @@ class TestApp(QMainWindow):
             zip_path = os.path.join(self.folderLineEdit.text(), zip_file)
             self.consoleLog(f"Iniciando prueba: {zip_file}\n")
             # Lógica para iniciar la prueba con el archivo process.py
-            self.process_module.run()
+            self.process_module.run(self.suscriber, zip_path)
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)

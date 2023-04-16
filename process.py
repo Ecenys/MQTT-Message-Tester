@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import zipfile
 
 # Descripción de la prueba y pasos del proceso de prueba
 description = "Prueba de ejemplo"
@@ -20,14 +21,13 @@ def __init__(self):
     self.currentStep = 0
 
 # Función para leer los archivos JSON o CBOR y realizar la prueba
-def run(self, zip_filename):
-    print(f"Suscribiendose a topics...")
-    # Suscribirse a los topics con la funcion subscribe_topics en suscriber.py
-    self.client = self.subscribe_topics(topics)
+def run(suscriber, zip_filename):
     # Cargar archivos JSON o CBOR desde el archivo ZIP y almacenarlos en una variable
+    suscriber.suscribe_topics(topics)
+    suscriber.client.publish("init_test_topic", "init_test_message")
     # (Agregar aquí la lógica específica para leer y procesar los archivos)
     print(f"Leyendo archivos desde {zip_filename}...")
-    with self.zipfile.ZipFile(zip_filename, "r") as zip_file:
+    with zipfile.ZipFile(zip_filename, "r") as zip_file:
         for file in zip_file.namelist():
             if file.endswith('.json') or file.endswith('.cbor'):
                 zip_file.extract(file)
@@ -44,7 +44,7 @@ def run(self, zip_filename):
         file = get_step_message(step["id"])
 
         # Envío de mensaje MQTT
-        self.client.publish(file['topic'], file['message'])
+        suscriber.client.publish(file['topic'], file['message'])
 
         # Esperar a que se reciba la respuesta MQTT
         while file['topic'] not in mqtt_messages:
@@ -61,8 +61,8 @@ def run(self, zip_filename):
         #     print(f"Paso {step['id']}: Realizándose")
 
     # Desconectar del broker MQTT
-    self.client.loop_stop()
-    self.client.disconnect()
+    suscriber.client.loop_stop()
+    suscriber.client.disconnect()
 
 # Función para obtener el mensaje del paso correspondiente
 def get_step_message(step_id):
