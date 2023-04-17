@@ -12,6 +12,10 @@ class Suscriber(object):
         self.client.loop_stop()
         self.client.disconnect()
 
+    def publish(self, topic, message):
+        self.client.publish("topic1", message)
+        pass
+
     def suscribe_topics(self, topics):
         for topic in topics:
             print(f"Subscribiendo a {topic}")
@@ -48,6 +52,13 @@ class Suscriber(object):
 
     # Función para manejar los mensajes MQTT recibidos
     def on_message(client, userdata, msg):
+        print("estoy aqui")
+        print("---------------------------")
+        print("---------------------------")
+        print("---------------------------")
+        print("---------------------------")
+        print("---------------------------")
+        print("---------------------------")
         global mqtt_messages
         mqtt_messages[msg.topic] = msg.payload.decode()
 
