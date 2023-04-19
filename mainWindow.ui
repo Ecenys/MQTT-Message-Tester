@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>318</width>
-    <height>686</height>
+    <width>628</width>
+    <height>634</height>
    </rect>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -23,6 +23,16 @@
       </item>
       <item>
        <widget class="QLineEdit" name="brokerAddressLineEdit"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Port</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit"/>
       </item>
       <item>
        <widget class="QPushButton" name="connectButton">
@@ -62,25 +72,29 @@
      </layout>
     </item>
     <item>
-     <widget class="QListWidget" name="zipListWidget">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QTextEdit" name="stepTextEdit">
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QListWidget" name="zipListWidget">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="stepTextEdit">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
      <layout class="QHBoxLayout" name="traceLayout">
       <item>
        <widget class="QLabel" name="traceLabel">
         <property name="text">
-         <string>Trazas:</string>
+         <string>Logs:</string>
         </property>
        </widget>
       </item>
@@ -99,7 +113,7 @@
        <bool>false</bool>
       </property>
       <property name="text">
-       <string>Iniciar Prueba</string>
+       <string>Start Test</string>
       </property>
      </widget>
     </item>
