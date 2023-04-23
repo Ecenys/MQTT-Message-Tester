@@ -1,15 +1,16 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
-from PyQt5.QtCore import Qt
-from PyQt5.uic import loadUi
 import zipfile
 import importlib.util
 import suscriber
-from testStatus import CompletedTest, FailedTest, TestStatus
-
-import testStatus as TestStatus
+import shutil
 import time
+import threading
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PyQt5.QtCore import Qt
+from PyQt5.uic import loadUi
+from testStatus import CompletedTest, FailedTest
 
 class TestApp(QMainWindow):
     noReadFiles = []
@@ -27,14 +28,18 @@ class TestApp(QMainWindow):
         self.connectButton.clicked.connect(self.connect_with_broker)
         self.folderButton.clicked.connect(self.select_folder)
         self.zipListWidget.itemClicked.connect(self.show_Test_Resume)
-        self.startButton.clicked.connect(self.run_test)
+        self.startButton.clicked.connect(self.run_test_thread)
 
     def connect_with_broker(self):
         self.clear()
         # Imprime en consola que se esta conetaando con el broker
         self.consoleLog("Conectando con el broker...")
         # Conecta con el broker
-        result = self.suscriber.checkBrokerAddress(self.brokerAddressLineEdit.text())
+        #si puerto no esta vacio
+        if self.brokerPortLineEdit.text() != "":
+            result = self.suscriber.checkBrokerAddress(self.brokerAddressLineEdit.text(), int(self.brokerPortLineEdit.text()))
+        else:
+            result = self.suscriber.checkBrokerAddress(self.brokerAddressLineEdit.text())
         # si se ha podido conectar con el broker
         if result:
             #imprime en consola que se ha conectado con el broker
@@ -58,7 +63,8 @@ class TestApp(QMainWindow):
         self.traceTextEdit.insertPlainText(str(toPrint) + "\n")
 
     def select_folder(self):
-        folder_path = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta") # Abrir diálogo para seleccionar carpeta
+        # Abrir diálogo para seleccionar carpeta
+        folder_path = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta") 
         folder_path_without_extension = os.path.splitext(folder_path)[0]
         self.folderLineEdit.setText(folder_path_without_extension)
         self.load_zip_files(folder_path)
@@ -69,11 +75,10 @@ class TestApp(QMainWindow):
         try:
             zip_files = [f for f in os.listdir(folder_path) if f.endswith('.zip')] # Obtener archivos .zip del directorio
         except Exception as e:
-            print("Error al leer archivos .zip:", e)
+            self.consoleLog("Error al leer archivos .zip:", e)
         self.zipListWidget.addItems(zip_files)
         if zip_files:
             self.zipListWidget.setEnabled(True)
-            self.startButton.setEnabled(True)
         else:
             self.zipListWidget.setEnabled(False)
             self.startButton.setEnabled(False)
@@ -95,6 +100,7 @@ class TestApp(QMainWindow):
                 elif key == "description":
                     testResume += f": {value}"            
         
+        self.startButton.setEnabled(True)
         self.stepTextEdit.setPlainText(testResume)
         
     def read_zip_data(self, zip_path):
@@ -102,7 +108,7 @@ class TestApp(QMainWindow):
         with zipfile.ZipFile(zip_path, "r") as zip_file:
             # Extraer el archivo process.py del ZIP
             self.consoleLog(f"Leyendo process de {zip_path}...")
-            zip_file.extract("process.py")
+            zip_file.extract("process.py", ".\\temp")
 
         # Cargar el módulo process.py
         self.process_module = None
@@ -115,7 +121,7 @@ class TestApp(QMainWindow):
             self.process_module.FailedTest = FailedTest
             self.process_module.CompletedTest = CompletedTest
         except Exception as e:
-            print("Error al cargar el módulo process.py:", e)
+            self.consoleLog("Error al cargar el módulo process.py:", e)
             return "", []
         
         # Obtener los pasos del proceso de prueba
@@ -126,13 +132,13 @@ class TestApp(QMainWindow):
         
     def readFiles(self, zip_path):
         # (Agregar aquí la lógica específica para leer y procesar los archivos)
-        print(f"Leyendo posibles archivos desde {zip_path}...")
+        self.consoleLog(f"Leyendo posibles archivos desde {zip_path}...")
         i = 0
         with zipfile.ZipFile(zip_path, "r") as zip_file:
             for file in zip_file.namelist():
                 if (not any(file.endswith(extension) for extension in self.noReadFiles)) and (not file.endswith(".py")):
-                    zip_file.extract(file)
-                    with open(file, "r") as f:
+                    zip_file.extract(file, ".\\temp")
+                    with open(".\\temp\\" + file, "r") as f:
                         self.mqtt_messages[i] = f.read()
                         i += 1
 
@@ -148,13 +154,13 @@ class TestApp(QMainWindow):
                     method = getattr(self.process_module, method_name)
                     try:
                         method(self.process_module)
-                        print("El test está en proceso")
+                        self.consoleLog("El test esta en proceso")
                     except FailedTest as e:
                         self.consoleLog(f"El test {step} ha fallado.")
                         break
                         # Realizar acciones específicas para el estado failed
                     except CompletedTest as e:
-                        print(f"El test {step} ha sido completado.")
+                        self.consoleLog(f"El test {step} ha sido completado.")
                         step += 1
                         # Realizar acciones específicas para el estado completado
                             
@@ -200,10 +206,31 @@ class TestApp(QMainWindow):
 
             zip_file_without_extension = os.path.splitext(zip_file)[0]
             self.consoleLog(f"Prueba finalizada: {zip_file_without_extension}")
-            #desconecta el cliente mqtt
+
+            # Borrar archivos temporales
+            self.delete_temp_files()
+            # Desconecta el cliente mqtt
             self.suscriber.client.loop_stop()
 
+    #metodo que lanza run_test en un hilo de qt
+    def run_test_thread(self):
+        self.run_test_thread = threading.Thread(target=self.run_test)
+        self.run_test_thread.start()
 
+    # Funcion para borrar los archivos temporales
+    def delete_temp_files(self):
+        try:
+            shutil.rmtree(".\\temp")
+        except Exception as e:
+            self.consoleLog("Error al borrar archivos temporales:", e)
+
+
+    # Evento para conectar al broker cuando se presiona el botón Enter
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
+            if self.brokerAddressLineEdit.hasFocus() or self.brokerPortLineEdit.hasFocus():
+                self.connectButton.click()
+    
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)
