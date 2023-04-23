@@ -22,7 +22,7 @@ class Suscriber(object):
             self.client.subscribe(topic)
         return self.client
 
-    def checkBrokerAddress(self, brokerAddress, port=1883):
+    def checkBrokerAddress(self, brokerAddress, port=1883, user = None, password = None):
         # Si hay una conexion con el broker, se desconecta
         if self.client.is_connected():
             self.client.disconnect()
@@ -31,6 +31,9 @@ class Suscriber(object):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # Establecemos un tiempo de espera de 1 segundo para la conexión
             sock.settimeout(10)
+            # User y password si no es none
+            if user != None and password != None:
+                self.client.username_pw_set(user, password)
             # Intentamos conectar al broker en la dirección y puerto especificados
             resultado = sock.connect_ex((brokerAddress, port))
             # Cerramos el socket
@@ -39,9 +42,9 @@ class Suscriber(object):
             if resultado == 0:
                 #conecta con el broker
                 self.client.connect(brokerAddress, port)
-                self.client.on_message = self.on_message
+                #self.client.on_message = self.on_message
                 self.client.loop_start()
-                print("Conexión con el broker establecida")
+                print("Conexion con el broker establecida")
                 return True
             else:
                 return False
