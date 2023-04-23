@@ -16,10 +16,22 @@ class Suscriber(object):
         self.client.publish("topic1", message)
         pass
 
+    #Funcion que busca entre los mensajes recibidos el mensaje con el topic especificado y devuelve el payload
+    def get_message(self, topic):
+        for message in self.messages:
+            if message.topic == topic:
+                return message.payload
+
     def suscribe_topics(self, topics):
         for topic in topics:
-            print(f"Subscribiendo a {topic}")
+            self.consoleLog(f"Subscribiendo a {topic}")
             self.client.subscribe(topic)
+        return self.client
+    
+    # Suscribe a un topic
+    def suscribe_topic(self, topic):
+        self.consoleLog(f"Subscribiendo a {topic}")
+        self.client.subscribe(topic)
         return self.client
 
     def checkBrokerAddress(self, brokerAddress, port=1883, user = None, password = None):
@@ -41,40 +53,45 @@ class Suscriber(object):
             # Si el resultado de la conexión es 0 (éxito), entonces podemos establecer la conexión
             if resultado == 0:
                 #conecta con el broker
+                self.client.on_connect = self.on_connect
+                self.client.on_message = self.on_message
+                self.client.on_subscribe = self.on_subscribe
+                self.client.on_disconnect = self.on_disconnect
                 self.client.connect(brokerAddress, port)
-                #self.client.on_message = self.on_message
                 self.client.loop_start()
-                print("Conexion con el broker establecida")
+                self.consoleLog("Conexion con el broker establecida")
                 return True
             else:
                 return False
         except Exception as e:
-            print(f"Ocurrió un error al intentar conectar con el broker: {e}")
+            self.consoleLog(f"Ocurrió un error al intentar conectar con el broker: {e}")
             return False
-
-
-    # Función para manejar los mensajes MQTT recibidos
-    def on_message(client, userdata, msg):
-        print("estoy aqui")
-        print("---------------------------")
-        print("---------------------------")
-        print("---------------------------")
-        print("---------------------------")
-        print("---------------------------")
-        print("---------------------------")
-        global mqtt_messages
-        mqtt_messages[msg.topic] = msg.payload.decode()
-
-    # Inicia la conexion con el broker
-    # def on_connect(self, client, userdata, flags, rc):
-    #     self.client = mqtt.Client()
-    #     self.client.on_message = self.on_message
-    #     self.client.connect(self.broker, self.port)
-    #     self.client.loop_start()
         
-    #     # Usuario y contraseña
-    #     self.client.username_pw_set(self.username, self.password)
-    #     return self.client
+
+
+    # Funcion que se ejecuta cuando se establece la conexion con el broker
+    def on_connect(self, client, userdata, flags, rc):
+        if rc == 0:
+            self.consoleLog("Conexión exitosa al broker MQTT")
+        else:
+            self.consoleLog("Error de conexión, código de retorno = ", rc)
+
+    # Funcion que se ejecuta cuando se recibe un mensaje
+    def on_message(self, client, userdata, message):
+        self.consoleLog(f"Mensaje recibido: {message.topic.decode('utf-8')}")
+        self.messages.append(message)
+    
+    # Funcion que se ejecuta cuando se suscribe a un topic
+    def on_subscribe(self, client, userdata, mid, granted_qos):
+        #imprime mid y granted_qos
+        self.consoleLog(f"Suscripcion exitosa a mid: {mid} y granted_qos: {granted_qos}")
+
+    # Funcion que se ejecuta cuando se desconecta del broker
+    def on_disconnect(self, client, userdata, rc):
+        if rc != 0:
+            self.consoleLog("Desconexion inesperada del broker MQTT")
+        else:
+            self.consoleLog("Desconexion exitosa del broker MQTT")
 
 if __name__ == "__main__":
     # Inicia la conexion con el broker
