@@ -6,6 +6,7 @@ import suscriber
 import shutil
 import time
 import threading
+import atexit
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import Qt
@@ -19,8 +20,12 @@ class TestApp(QMainWindow):
     def __init__(self):
         super(TestApp, self).__init__()
 
+        # Función que se ejecuta al cerrar la aplicación
+        atexit.register(self.exit_handler)
+
         # crear la instancia a la clase de suscriber que se encuentra en el mismo directorio que main.py
         self.suscriber = suscriber.Suscriber()
+        self.suscriber.consoleLog = self.consoleLog
         # para usar el consoleLog en suscriber.py
         self.suscriber.consoleLog = self.consoleLog
 
@@ -30,6 +35,12 @@ class TestApp(QMainWindow):
         self.zipListWidget.itemClicked.connect(self.show_Test_Resume)
         self.startButton.clicked.connect(self.run_test_thread)
 
+    # Función que se ejecuta al cerrar la aplicación
+    def exit_handler(self):
+        # Borrar el directorio temporal
+        shutil.rmtree("temp", ignore_errors=True)
+
+    # Función que se ejecuta al presionar el botón de conectar con el broker
     def connect_with_broker(self):
         self.clear()
         # Imprime en consola que se esta conetaando con el broker
@@ -51,6 +62,7 @@ class TestApp(QMainWindow):
             #imprime en consola que no se ha podido conectar con el broker 
             self.consoleLog("No se ha podido conectar con el broker")
 
+    # Función que limpia la interfaz
     def clear(self):
         self.folderButton.setEnabled(False)
         self.zipListWidget.setEnabled(False)
@@ -58,10 +70,12 @@ class TestApp(QMainWindow):
         self.zipListWidget.clear()
         self.traceTextEdit.clear()
 
+    # Función que muestra información en la consola y en la interfaz
     def consoleLog(self, toPrint):
         print(str(toPrint) + "\n")
         self.traceTextEdit.insertPlainText(str(toPrint) + "\n")
 
+    # Función que se ejecuta al presionar el botón de seleccionar carpeta
     def select_folder(self):
         # Abrir diálogo para seleccionar carpeta
         folder_path = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta") 
@@ -69,6 +83,7 @@ class TestApp(QMainWindow):
         self.folderLineEdit.setText(folder_path_without_extension)
         self.load_zip_files(folder_path)
         
+    # Función que carga los archivos .zip de la carpeta seleccionada
     def load_zip_files(self, folder_path):
         self.zipListWidget.clear()
         zip_files = []
@@ -83,6 +98,7 @@ class TestApp(QMainWindow):
             self.zipListWidget.setEnabled(False)
             self.startButton.setEnabled(False)
         
+    # Función que se ejecuta al preisonar un elemento de la lista de archivos .zip
     def show_Test_Resume(self, item):
         description = ""
         testResume = ""
@@ -103,6 +119,7 @@ class TestApp(QMainWindow):
         self.startButton.setEnabled(True)
         self.stepTextEdit.setPlainText(testResume)
         
+    # Función que lee los datos de un archivo .zip
     def read_zip_data(self, zip_path):
         # Abrir el archivo ZIP
         with zipfile.ZipFile(zip_path, "r") as zip_file:
@@ -142,6 +159,7 @@ class TestApp(QMainWindow):
                         self.mqtt_messages[i] = f.read()
                         i += 1
 
+    # Función que ejecuta los pasos del proceso de prueba
     def runStepX(self, steps):
         step = 1
         if steps > 0:
@@ -171,6 +189,7 @@ class TestApp(QMainWindow):
         else:
             self.consoleLog("No se han definido pasos")
 
+    # Función que se ejecuta al presionar el botón de iniciar prueba
     def run_test(self):
         selected_item = self.zipListWidget.currentItem()
         if selected_item:
@@ -212,7 +231,7 @@ class TestApp(QMainWindow):
             # Desconecta el cliente mqtt
             self.suscriber.client.loop_stop()
 
-    #metodo que lanza run_test en un hilo de qt
+    # Metodo que lanza run_test en un hilo para evitar el bloqueo de la interfaz
     def run_test_thread(self):
         self.run_test_thread = threading.Thread(target=self.run_test)
         self.run_test_thread.start()
