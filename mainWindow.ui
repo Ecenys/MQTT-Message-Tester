@@ -22,17 +22,25 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="brokerAddressLineEdit"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Port</string>
+       <widget class="QLineEdit" name="brokerAddressLineEdit">
+        <property name="placeholderText">
+         <string>127.0.0.1</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="brokerPortLineEdit"/>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Port: </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="brokerPortLineEdit">
+        <property name="placeholderText">
+         <string>1883</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="connectButton">

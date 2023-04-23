@@ -12,6 +12,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import Qt
 from PyQt5.uic import loadUi
 from testStatus import CompletedTest, FailedTest
+from datetime import datetime
+
 
 class TestApp(QMainWindow):
     noReadFiles = []
@@ -23,11 +25,11 @@ class TestApp(QMainWindow):
         # Función que se ejecuta al cerrar la aplicación
         atexit.register(self.exit_handler)
 
-        # crear la instancia a la clase de suscriber que se encuentra en el mismo directorio que main.py
+        # Crear la instancia a la clase de suscriber que se encuentra en el mismo directorio que main.py
         self.suscriber = suscriber.Suscriber()
+        # Para usar el consoleLog en suscriber.py
         self.suscriber.consoleLog = self.consoleLog
-        # para usar el consoleLog en suscriber.py
-        self.suscriber.consoleLog = self.consoleLog
+
 
         loadUi("mainWindow.ui", self) # Cargar la interfaz desde el archivo mainWindow.ui
         self.connectButton.clicked.connect(self.connect_with_broker)
@@ -45,21 +47,28 @@ class TestApp(QMainWindow):
         self.clear()
         # Imprime en consola que se esta conetaando con el broker
         self.consoleLog("Conectando con el broker...")
+
         # Conecta con el broker
-        #si puerto no esta vacio
-        if self.brokerPortLineEdit.text() != "":
-            result = self.suscriber.checkBrokerAddress(self.brokerAddressLineEdit.text(), int(self.brokerPortLineEdit.text()))
+        if self.brokerAddressLineEdit.text() != "":
+            address = self.brokerAddressLineEdit.text()
         else:
-            result = self.suscriber.checkBrokerAddress(self.brokerAddressLineEdit.text())
-        # si se ha podido conectar con el broker
+            address = "127.0.0.1"
+        if self.brokerPortLineEdit.text() != "":
+            port = int(self.brokerPortLineEdit.text())
+        else:
+            port = 1883
+
+        result = self.suscriber.checkBrokerAddress(address, port)
+
+        # Si se ha podido conectar con el broker
         if result:
-            #imprime en consola que se ha conectado con el broker
+            # Imprime en consola que se ha conectado con el broker
             self.consoleLog("Conectado con el broker")
-            #activa el boton de seleccionar carpeta
+            # Activa el boton de seleccionar carpeta
             self.folderButton.setEnabled(True)
             
         else:
-            #imprime en consola que no se ha podido conectar con el broker 
+            # Imprime en consola que no se ha podido conectar con el broker 
             self.consoleLog("No se ha podido conectar con el broker")
 
     # Función que limpia la interfaz
@@ -72,8 +81,10 @@ class TestApp(QMainWindow):
 
     # Función que muestra información en la consola y en la interfaz
     def consoleLog(self, toPrint):
-        print(str(toPrint) + "\n")
-        self.traceTextEdit.insertPlainText(str(toPrint) + "\n")
+        timeNow = datetime.now().strftime("%Y-%m-%d-%H:%M%S.$f")
+        print(timeNow + str(toPrint) + "\n")
+        self.traceTextEdit.append(timeNow + str(toPrint))
+        self.traceTextEdit.verticalScrollBar().setValue(self.traceTextEdit.verticalScrollBar().maximum())
 
     # Función que se ejecuta al presionar el botón de seleccionar carpeta
     def select_folder(self):
@@ -88,7 +99,8 @@ class TestApp(QMainWindow):
         self.zipListWidget.clear()
         zip_files = []
         try:
-            zip_files = [f for f in os.listdir(folder_path) if f.endswith('.zip')] # Obtener archivos .zip del directorio
+            # Obtener archivos .zip del directorio
+            zip_files = [f for f in os.listdir(folder_path) if f.endswith('.zip')] 
         except Exception as e:
             self.consoleLog("Error al leer archivos .zip:", e)
         self.zipListWidget.addItems(zip_files)
@@ -135,6 +147,7 @@ class TestApp(QMainWindow):
             spec.loader.exec_module(self.process_module)
             self.process_module.mmt = self
             self.process_module.suscriber = self.suscriber
+            self.process_module.common = self.common
             self.process_module.FailedTest = FailedTest
             self.process_module.CompletedTest = CompletedTest
         except Exception as e:

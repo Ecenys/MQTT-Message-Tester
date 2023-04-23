@@ -8,6 +8,7 @@ steps = [
 # Lista de topics a suscribirse
 topics = ["topic1", "topic2", "topic3"]
 i = 0
+
 def awake(self):
     pass
 
