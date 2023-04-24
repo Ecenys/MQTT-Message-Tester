@@ -331,26 +331,6 @@ class Suscriber(object):
                     result.append(message.topic)
         return result
     
-    def search_topic_from_last_call(self, topic):
-        result = self.search_topics(self.messages, topic, last_message_position=self.last_message_position)
-        if result:
-            return result[-1]
-        return None
-    
-    def search_all_topics_from_last_call(self, topic):
-        result = self.search_topics(self.messages, topic, last_message_position=self.last_message_position)
-        return result
-    
-    def search_topic(self, topic):
-        result = self.search_topics(self.messages, topic)
-        if result:
-            return result[-1]
-        return None
-    
-    def search_all_topics(self, topic):
-        result = self.search_topics(self.messages, topic)
-        return result
-
     # Funcion que se le pasa un topic, busca en la lista desde la ultima llamada y si encuentra alguno devuelve el payload, si no lo encuentra devuelve None
     def search_messages(self, messages, topic, last_message_position=None):
         if last_message_position is None:
@@ -363,7 +343,43 @@ class Suscriber(object):
                 if self.match_topic(topic_list, message_topic_list):
                     result.append(message.payload)
         return result
+    
+    # Funcion que se le pasa un topic, busca en la lista y si encuentra alguno devuelve el topic, si no lo encuentra devuelve None
+    def search_topic(self, topic):
+        result = self.search_topics(self.messages, topic)
+        if result:
+            return result[-1]
+        return None
+    
+    # Funcion que se le pasa un topic, busca en la lista y devuelve todos los topics encontrados, si no lo encuentra devuelve None
+    def search_all_topics(self, topic):
+        result = self.search_topics(self.messages, topic)
+        return result
+    
+    # Funcion que se le pasa un topic, busca en la lista desde la ultima llamada y si encuentra alguno devuelve el topic, si no lo encuentra devuelve None
+    def search_topic_from_last_call(self, topic):
+        result = self.search_topics(self.messages, topic, last_message_position=self.last_message_position)
+        if result:
+            return result[-1]
+        return None
+    
+    # Funcion que se le pasa un topic, busca en la lista desde la ultima llamada y devuelve todos los topics encontrados, si no lo encuentra devuelve None
+    def search_all_topics_from_last_call(self, topic):
+        result = self.search_topics(self.messages, topic, last_message_position=self.last_message_position)
+        return result
 
+    # Funcion que se le pasa un topic, busca en la lista y si encuentra alguno devuelve el payload, si no lo encuentra devuelve None
+    def get_message(self, topic):
+        result = self.search_messages(self.messages, topic)
+        if result:
+            return result[0]
+        return None
+
+    # Funcion que se le pasa un topic, busca en la lista y devuelve todos los payload encontrados, si no lo encuentra devuelve None
+    def get_all_messages(self, topic):
+        return self.search_messages(self.messages, topic)
+
+    # Funcion que se le pasa un topic, busca en la lista desde la ultima llamada y si encuentra alguno devuelve el payload, si no lo encuentra devuelve None
     def get_message_from_last_call(self, topic):
         result = self.search_messages(self.messages, topic, last_message_position=self.last_message_position)
         if result:
@@ -371,19 +387,11 @@ class Suscriber(object):
             return result[0]
         return None
 
+    # Funcion que se le pasa un topic, busca en la lista desde la ultima llamada y devuelve todos los payload encontrados, si no lo encuentra devuelve None
     def get_all_messages_from_last_call(self, topic):
         result = self.search_messages(self.messages, topic, last_message_position=self.last_message_position)
         self.last_message_position = self.messages.index(self.messages[-1]) + 1
         return result
-
-    def get_message(self, topic):
-        result = self.search_messages(self.messages, topic)
-        if result:
-            return result[0]
-        return None
-
-    def get_all_messages(self, topic):
-        return self.search_messages(self.messages, topic)
 
 
 if __name__ == "__main__":
