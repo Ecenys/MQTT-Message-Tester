@@ -221,7 +221,7 @@ class TestApp(QMainWindow):
                             
                     time.sleep(1)
                 else:
-                    self.consoleLog(f"El método {method_name} no existe")
+                    self.consoleLog(f"El metodo {method_name} no existe")
                     break
         else:
             self.consoleLog("No se han definido pasos")
@@ -250,7 +250,7 @@ class TestApp(QMainWindow):
             self.consoleLog(f"Buscando metodo run")
             self.process_module.run(self.process_module)
 
-            self.consoleLog(f"Empezando pasos")
+            self.consoleLog(f"Empezando prueba con {len(self.process_module.steps)} steps")
             self.runStepX(len(self.process_module.steps))
             
             #   Lógica para llamar al metodo late

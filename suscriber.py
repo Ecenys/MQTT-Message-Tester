@@ -18,12 +18,6 @@ class Suscriber(object):
         self.client.publish("topic1", message)
         pass
 
-    #Funcion que busca entre los mensajes recibidos el mensaje con el topic especificado y devuelve el payload
-    def get_message(self, topic):
-        for message in self.messages:
-            if message.topic == topic:
-                return message.payload
-
     def suscribe_topics(self, topics):
         for topic in topics:
             print(f"Subscribiendo a {topic}")
@@ -94,13 +88,6 @@ class Suscriber(object):
             print("Desconexion inesperada del broker MQTT")
         else:
             print("Desconexion exitosa del broker MQTT")
-
-    # Funcion que devuelve el mensaje con el topic y si no lo encuentra devuelve None
-    def get_single_message(self, topic):
-        for message in self.messages:
-            if topic in message.topic:
-                return message.payload
-        return None
     
     # Funcion que devuelve el ultimo mensaje con el topic y si no lo encuentra devuelve None
     def get_last_message(self, topic):
@@ -127,12 +114,22 @@ class Suscriber(object):
 
     # Funcion que devuelve, entre todos los mensajes recibidos desde la ultima llamada a esta funcion, el mensaje con el topic y si no lo encuentra devuelve None
     # Se guardará la posicion del ultimo mensaje con el topic en la variable last_message_position
-    def get_message_from_last_call(self, topic):
+    def get_message_from_last_call_that_topic_contains(self, topic):
         for message in self.messages[self.last_message_position:]:
             self.last_message_position = self.messages.index(message)
             if topic in message.topic:
                 return message.payload
         return None
+    
+    # Funcion que devuelve, entre todos los mensajes recibidos desde la ultima llamada a esta funcion, todos los mensajes con el topic y si no lo encuentra devuelve una lista vacia
+    # Se guardará la posicion del ultimo mensaje con el topic en la variable last_message_position
+    def get_all_messages_from_last_call_that_topic_contains(self, topic):
+        messages = []
+        for message in self.messages[self.last_message_position:]:
+            self.last_message_position = self.messages.index(message)
+            if topic in message.topic:
+                messages.append(message.payload)
+        return messages
     
     # Funcion que devuelve el topic de un mensaje con el que concuerde el payload, si no lo encuentra devuelve None
     def get_topic_from_message(self, payload):
@@ -149,12 +146,127 @@ class Suscriber(object):
                 topics.append(message.topic)
         return topics
     
-    # Funcion que se le pasa una lista de topics, busca en la lista y si encuentra alguno devuelve el topic, si no lo encuentra devuelve None
-    def search_topic_from_list(self, topics):
+    # Funcion que se le pasa un topic, busca en la lista y si encuentra alguno devuelve el topic, si no lo encuentra devuelve None
+    # El topic puede tener + que significa que lo que hay entre el + y el / anterior puede ser cualquier cosa
+    # El topic puede tener # que significa que lo que hay despues del # puede ser cualquier cosa
+    # La funcion irá comprobando cada nivel del topic, si ese nivel tiene un +, lo salta y si tiene un #, devuelve el topic
+    def search_topic(self, topic):
         for message in self.messages:
-            if message.topic in topics:
-                return message.topic
+            topic_list = topic.split("/")
+            message_topic_list = message.topic.split("/")
+            if len(topic_list) <= len(message_topic_list):
+                for i in range(len(topic_list)):
+                    if topic_list[i] == message_topic_list[i] or topic_list[i] == "+":
+                        if i == len(message_topic_list) - 1:
+                            return message.topic
+                    elif topic_list[i] == "#":
+                        return message.topic
+                    else:
+                        break
         return None
+    
+    # Funcion que se le pasa un topic, busca en la lista y si encuentra alguno devuelve el topic, si no lo encuentra devuelve None
+    # El topic puede tener + que significa que lo que hay entre el + y el / anterior puede ser cualquier cosa
+    # El topic puede tener # que significa que lo que hay despues del # puede ser cualquier cosa
+    # La funcion irá comprobando cada nivel del topic, si ese nivel tiene un +, lo salta y si tiene un #, devuelve el topic
+    def search_all_topics(self, topic):
+        topics = []
+        for message in self.messages:
+            topic_list = topic.split("/")
+            message_topic_list = message.topic.split("/")
+            if len(topic_list) <= len(message_topic_list):
+                for i in range(len(topic_list)):
+                    if topic_list[i] == message_topic_list[i] or topic_list[i] == "+":
+                        if i == len(message_topic_list) - 1:
+                            topics.append(message.topic)
+                    elif topic_list[i] == "#":
+                        topics.append(message.topic)
+                    else:
+                        break
+        return topics
+    
+    # Funcion que se le pasa un topic, busca en la lista y si encuentra alguno devuelve el payload, si no lo encuentra devuelve None
+    # El topic puede tener + que significa que lo que hay entre el + y el / anterior puede ser cualquier cosa
+    # El topic puede tener # que significa que lo que hay despues del # puede ser cualquier cosa
+    # La funcion irá comprobando cada nivel del topic, si ese nivel tiene un +, lo salta y si tiene un #, devuelve el topic
+    def get_message(self, topic):
+        for message in self.messages:
+            topic_list = topic.split("/")
+            message_topic_list = message.topic.split("/")
+            if len(topic_list) == len(message_topic_list):
+                for i in range(len(topic_list)):
+                    if topic_list[i] == message_topic_list[i] or topic_list[i] == "+":
+                        if i == len(topic_list) - 1:
+                            return message.payload
+                    elif topic_list[i] == "#":
+                        return message.payload
+                    else:
+                        break
+        return None
+    
+    # Funcion que se le pasa un topic, busca en la lista y si encuentra alguno devuelve el payload, si no lo encuentra devuelve None
+    # El topic puede tener + que significa que lo que hay entre el + y el / anterior puede ser cualquier cosa
+    # El topic puede tener # que significa que lo que hay despues del # puede ser cualquier cosa
+    # La funcion irá comprobando cada nivel del topic, si ese nivel tiene un +, lo salta y si tiene un #, devuelve el topic
+    def get_all_messages(self, topic):
+        messages = []
+        for message in self.messages:
+            topic_list = topic.split("/")
+            message_topic_list = message.topic.split("/")
+            if len(topic_list) == len(message_topic_list):
+                for i in range(len(topic_list)):
+                    if topic_list[i] == message_topic_list[i] or topic_list[i] == "+":
+                        if i == len(topic_list) - 1:
+                            messages.append(message.payload)
+                    elif topic_list[i] == "#":
+                        messages.append(message.payload)
+                    else:
+                        break
+        return messages
+    
+    # Funcion que se le pasa un topic, busca en la lista desde la ultima llamada y si encuentra alguno devuelve el payload, si no lo encuentra devuelve None
+    # El topic puede tener + que significa que lo que hay entre el + y el / anterior puede ser cualquier cosa
+    # El topic puede tener # que significa que lo que hay despues del # puede ser cualquier cosa
+    # La funcion irá comprobando cada nivel del topic, si ese nivel tiene un +, lo salta y si tiene un #, devuelve el topic
+    def get_message_from_last_call(self, topic):
+        for message in self.messages[self.last_message_position:]:
+            self.last_message_position = self.messages.index(message)
+            topic_list = topic.split("/")
+            message_topic_list = message.topic.split("/")
+            if len(topic_list) == len(message_topic_list):
+                for i in range(len(topic_list)):
+                    if topic_list[i] == message_topic_list[i] or topic_list[i] == "+":
+                        if i == len(topic_list) - 1:
+                            return message.payload
+                    elif topic_list[i] == "#":
+                        return message.payload
+                    else:
+                        break
+        return None
+    
+    # Funcion que se le pasa un topic, busca en la lista desde la ultima llamada y si encuentra alguno devuelve el payload, si no lo encuentra devuelve None
+    # El topic puede tener + que significa que lo que hay entre el + y el / anterior puede ser cualquier cosa
+    # El topic puede tener # que significa que lo que hay despues del # puede ser cualquier cosa
+    # La funcion irá comprobando cada nivel del topic, si ese nivel tiene un +, lo salta y si tiene un #, devuelve el topic
+    def get_all_messages_from_last_call(self, topic):
+        messages = []
+        for message in self.messages[self.last_message_position:]:
+            self.last_message_position = self.messages.index(message)
+            topic_list = topic.split("/")
+            message_topic_list = message.topic.split("/")
+            if len(topic_list) == len(message_topic_list):
+                for i in range(len(topic_list)):
+                    if topic_list[i] == message_topic_list[i] or topic_list[i] == "+":
+                        if i == len(topic_list) - 1:
+                            messages.append(message.payload)
+                    elif topic_list[i] == "#":
+                        messages.append(message.payload)
+                    else:
+                        break
+        return messages
+    
+
+
 
 if __name__ == "__main__":
     # Inicia la conexion con el broker
