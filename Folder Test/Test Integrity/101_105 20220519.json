@@ -1,0 +1,87 @@
+TOPIC = 101/105/0/0/505/100/101/543235882/1578987845
+{
+  "ServiceID": 101105,
+  "Root": {
+    "Gateway": 1000110,
+    "Source": 0,
+    "TimeStamp": 1652952923
+  },
+  "Nodes": [
+    {
+      "Safety": true,
+      "NodeID": 999999999999999,
+      "TimeStamp": 1652952922,
+      "TimeAccuracy": 958851106,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952922,
+          "TimeAccuracy": 958851106,
+          "Resources": {
+            "5527": "9111111111111111111301"
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952922,
+          "TimeAccuracy": 958851106,
+          "Resources": {
+            "5700": 1000
+          }
+        }
+      ],
+      "CRC": 0
+    },
+    {
+      "Safety": true,
+      "NodeID": 520004,
+      "TimeStamp": 1652952922,
+      "TimeAccuracy": 958851106,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952922,
+          "TimeAccuracy": 958851106,
+          "Resources": {
+            "5527": "9111111111111111111304"
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952922,
+          "TimeAccuracy": 958851106,
+          "Resources": {
+            "5700": 1010
+          }
+        }
+      ],
+      "CRC": 0
+    },
+    {
+      "Safety": true,
+      "NodeID": 520005,
+      "TimeStamp": 1652952922,
+      "TimeAccuracy": 958851106,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952922,
+          "TimeAccuracy": 958851106,
+          "Resources": {
+            "5527": "9111111111111111111305"
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952922,
+          "TimeAccuracy": 958851106,
+          "Resources": {
+            "5700": 1020
+          }
+        }
+      ],
+      "CRC": 0
+    }
+  ],
+  "CRC": 0
+}

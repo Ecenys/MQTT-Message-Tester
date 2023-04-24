@@ -5,7 +5,7 @@ import binascii
 from datetime import datetime
 from collections import OrderedDict
 
-class common(object):
+class Common(object):
 
     # Funcion que tranforma de json a cbor
     def json_to_cbor(self, json_data):

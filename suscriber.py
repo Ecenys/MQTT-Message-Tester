@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QMessageBox
 class Suscriber(object):
     def __init__(self):
         self.client = mqtt.Client()
+        self.messages = []
         self.last_message_position = 0
 
     def disconnect(self):
@@ -79,7 +80,7 @@ class Suscriber(object):
 
     # Funcion que se ejecuta cuando se recibe un mensaje
     def on_message(self, client, userdata, message):
-        print(f"Mensaje recibido: {message.topic.decode('utf-8')}")
+        print(f"Mensaje recibido: {message.topic}")
         self.messages.append(message)
 
     # Funcion que se ejecuta cuando se suscribe a un topic
@@ -97,14 +98,14 @@ class Suscriber(object):
     # Funcion que devuelve el mensaje con el topic y si no lo encuentra devuelve None
     def get_single_message(self, topic):
         for message in self.messages:
-            if message.topic == topic:
+            if topic in message.topic:
                 return message.payload
         return None
     
     # Funcion que devuelve el ultimo mensaje con el topic y si no lo encuentra devuelve None
     def get_last_message(self, topic):
         for message in reversed(self.messages):
-            if message.topic == topic:
+            if topic in message.topic:
                 return message.payload
         return None
 
@@ -112,7 +113,7 @@ class Suscriber(object):
     def get_all_messages(self, topic):
         messages = []
         for message in self.messages:
-            if message.topic == topic:
+            if topic in message.topic :
                 messages.append(message.payload)
         return messages
 
@@ -128,8 +129,8 @@ class Suscriber(object):
     # Se guardará la posicion del ultimo mensaje con el topic en la variable last_message_position
     def get_message_from_last_call(self, topic):
         for message in self.messages[self.last_message_position:]:
-            if message.topic == topic:
-                self.last_message_position = self.messages.index(message)
+            self.last_message_position = self.messages.index(message)
+            if topic in message.topic:
                 return message.payload
         return None
     
@@ -147,6 +148,13 @@ class Suscriber(object):
             if message.payload == payload:
                 topics.append(message.topic)
         return topics
+    
+    # Funcion que se le pasa una lista de topics, busca en la lista y si encuentra alguno devuelve el topic, si no lo encuentra devuelve None
+    def search_topic_from_list(self, topics):
+        for message in self.messages:
+            if message.topic in topics:
+                return message.topic
+        return None
 
 if __name__ == "__main__":
     # Inicia la conexion con el broker

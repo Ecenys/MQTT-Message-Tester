@@ -3,6 +3,7 @@ import os
 import zipfile
 import importlib.util
 import suscriber
+import common
 import shutil
 import time
 import threading
@@ -11,7 +12,7 @@ import atexit
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtCore import Qt
 from PyQt5.uic import loadUi
-from testStatus import CompletedTest, FailedTest
+from testStatus import CompletedStep, FailedStep, FinishedTest
 from datetime import datetime
 
 
@@ -29,6 +30,8 @@ class TestApp(QMainWindow):
         self.suscriber = suscriber.Suscriber()
         # Para usar el consoleLog en suscriber.py
         self.suscriber.consoleLog = self.consoleLog
+
+        self.common = common.Common()
 
 
         loadUi("mainWindow.ui", self) # Cargar la interfaz desde el archivo mainWindow.ui
@@ -81,7 +84,7 @@ class TestApp(QMainWindow):
 
     # Función que muestra información en la consola y en la interfaz
     def consoleLog(self, toPrint):
-        timeNow = datetime.now().strftime("%Y-%m-%d-%H:%M%S.$f")
+        timeNow = datetime.now().strftime("%Y-%m-%d-%H:%M%S.%f> ")
         print(timeNow + str(toPrint) + "\n")
         self.traceTextEdit.append(timeNow + str(toPrint))
         self.traceTextEdit.verticalScrollBar().setValue(self.traceTextEdit.verticalScrollBar().maximum())
@@ -112,6 +115,7 @@ class TestApp(QMainWindow):
         
     # Función que se ejecuta al preisonar un elemento de la lista de archivos .zip
     def show_Test_Resume(self, item):
+        stepIndex = 1
         description = ""
         testResume = ""
         zip_file = item.text()
@@ -124,9 +128,11 @@ class TestApp(QMainWindow):
         for step in stepsList:
             for key, value in step.items():
                 if key == "name":
-                    testResume += f"\n{value}"
+                    testResume = testResume + f"\n\nStep {stepIndex}"
+                    testResume += f"- {value}"
                 elif key == "description":
-                    testResume += f": {value}"            
+                    testResume += f": {value}"
+                    stepIndex += 1
         
         self.startButton.setEnabled(True)
         self.stepTextEdit.setPlainText(testResume)
@@ -142,16 +148,18 @@ class TestApp(QMainWindow):
         # Cargar el módulo process.py
         self.process_module = None
         try:
-            spec = importlib.util.spec_from_file_location("process", "process.py")
+            spec = importlib.util.spec_from_file_location(".\\temp\process", ".\\temp\process.py")
             self.process_module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(self.process_module)
             self.process_module.mmt = self
             self.process_module.suscriber = self.suscriber
             self.process_module.common = self.common
-            self.process_module.FailedTest = FailedTest
-            self.process_module.CompletedTest = CompletedTest
+            self.process_module.consoleLog = self.consoleLog
+            self.process_module.FailedStep = FailedStep
+            self.process_module.CompletedStep = CompletedStep
+            self.process_module.FinishedTest = FinishedTest
         except Exception as e:
-            self.consoleLog("Error al cargar el módulo process.py:", e)
+            self.consoleLog("Error al cargar el modulo process.py:" + str(e))
             return "", []
         
         # Obtener los pasos del proceso de prueba
@@ -185,15 +193,31 @@ class TestApp(QMainWindow):
                     method = getattr(self.process_module, method_name)
                     try:
                         method(self.process_module)
-                        self.consoleLog("El test esta en proceso")
-                    except FailedTest as e:
-                        self.consoleLog(f"El test {step} ha fallado.")
-                        break
-                        # Realizar acciones específicas para el estado failed
-                    except CompletedTest as e:
-                        self.consoleLog(f"El test {step} ha sido completado.")
+                        #self.consoleLog("El test esta en proceso")
+                    except CompletedStep as e:
+                        self.consoleLog(f"==================================")
+                        self.consoleLog(f"El step {step} ha sido completado.")
+                        self.consoleLog(f"==================================")
                         step += 1
-                        # Realizar acciones específicas para el estado completado
+                        if step == steps:
+                            self.consoleLog(f"==================================")
+                            self.consoleLog(f"El test ha sido completado con exito en el step {step}.")
+                            self.consoleLog(f"==================================")
+                        else:
+                            self.process_module.betweenSteps(self.process_module)
+                    except FinishedTest as e:
+                        self.consoleLog(f"==================================")
+                        self.consoleLog(f"El test ha sido completado con exito en el step {step}.")
+                        self.consoleLog(f"==================================")
+                        break
+                    except FailedStep as e:
+                        self.consoleLog(f"El step {step} ha fallado.")
+                        self.consoleLog(f"Se termina la prueba.")
+                        break
+                    except Exception as e:
+                        self.consoleLog(f"Error inesperado en step {step}.")
+                        self.consoleLog(f"Error: {e}")
+                        break
                             
                     time.sleep(1)
                 else:

@@ -1,0 +1,29 @@
+TOPIC = 101/100/0/0/505/100/101/3099748410/2128413864
+{
+  "ServiceID": 101100,
+  "Root": {
+    "Gateway": 1000110,
+    "Source": 0,
+    "TimeStamp": 1652951780
+  },
+  "Nodes": [
+    {
+      "Safety": true,
+      "NodeID": 1,
+      "TimeStamp": 1652951757,
+      "TimeAccuracy": 56394133,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3306,
+          "TimeStamp": 1652951757,
+          "TimeAccuracy": 56394133,
+          "Resources": {
+            "5850": true
+          }
+        }
+      ],
+      "CRC": 0
+    }
+  ],
+  "CRC": 0
+}

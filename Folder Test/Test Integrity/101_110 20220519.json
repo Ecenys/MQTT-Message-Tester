@@ -1,0 +1,94 @@
+TOPIC = 101/110/0/0/503/100/100/1904456723/3910827352
+{
+  "ServiceID": 101110,
+  "Root": {
+    "Gateway": 0,
+    "Source": 503,
+    "TimeStamp": 1652952945
+  },
+  "Nodes": [
+    {
+      "Safety": true,
+      "NodeID": 520004,
+      "TimeStamp": 1652952945,
+      "TimeAccuracy": 394000000,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3306,
+          "TimeStamp": 1652952945,
+          "TimeAccuracy": 394000000,
+          "Resources": {
+            "5850": false
+          }
+        },
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952945,
+          "TimeAccuracy": 394000000,
+          "Resources": {
+            "5527": "0000000000000000000101103"
+          }
+        },
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952945,
+          "TimeAccuracy": 394000000,
+          "Resources": {
+            "5527": "9111111111111111111304"
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952945,
+          "TimeAccuracy": 394000000,
+          "Resources": {
+            "5700": 1010
+          }
+        }
+      ],
+      "CRC": 3132335309
+    },
+    {
+      "Safety": true,
+      "NodeID": 520005,
+      "TimeStamp": 1652952945,
+      "TimeAccuracy": 394000000,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3306,
+          "TimeStamp": 1652952945,
+          "TimeAccuracy": 394000000,
+          "Resources": {
+            "5850": false
+          }
+        },
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952945,
+          "TimeAccuracy": 394000000,
+          "Resources": {
+            "5527": "0000000000000000000101103"
+          }
+        },
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952945,
+          "TimeAccuracy": 394000000,
+          "Resources": {
+            "5527": "9111111111111111111305"
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952945,
+          "TimeAccuracy": 394000000,
+          "Resources": {
+            "5700": 1020
+          }
+        }
+      ],
+      "CRC": 2751218183
+    }
+  ],
+  "CRC": 4056443176
+}

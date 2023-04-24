@@ -1,0 +1,63 @@
+TOPIC = 101/103/0/0/501/105/101/214789867/2915083950
+{
+  "ServiceID": 101103,
+  "Root": {
+    "Gateway": 1000110,
+    "Source": 0,
+    "TimeStamp": 1652952833
+  },
+  "Nodes": [
+    {
+      "Safety": true,
+      "NodeID": 520005,
+      "TimeStamp": 1652952833,
+      "TimeAccuracy": 516474009,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952833,
+          "TimeAccuracy": 516474009,
+          "Resources": {
+            "5700": 7.652,
+            "5701": "N"
+          }
+        },
+        {
+          "SensorID": 3330,
+          "TimeStamp": 1652952833,
+          "TimeAccuracy": 516474009,
+          "Resources": {
+            "5700": 7.47,
+            "5701": "m"
+          }
+        },
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952833,
+          "TimeAccuracy": 516474009,
+          "Resources": {
+            "5527": "9111111111111111111305"
+          }
+        },
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952833,
+          "TimeAccuracy": 516474009,
+          "Resources": {
+            "5527": "A1"
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952833,
+          "TimeAccuracy": 516474009,
+          "Resources": {
+            "5700": 1050
+          }
+        }
+      ],
+      "CRC": 0
+    }
+  ],
+  "CRC": 0
+}

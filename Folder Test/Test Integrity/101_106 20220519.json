@@ -1,0 +1,111 @@
+TOPIC = 101/106/0/0/503/100/100/1126746230/4275650445
+{
+  "ServiceID": 101106,
+  "Root": {
+    "Gateway": 0,
+    "Source": 503,
+    "TimeStamp": 1652952928
+  },
+  "Nodes": [
+    {
+      "Safety": true,
+      "NodeID": 520004,
+      "TimeStamp": 1652952928,
+      "TimeAccuracy": 145000000,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952928,
+          "TimeAccuracy": 145000000,
+          "Resources": {
+            "5527": "9111111111111111111304"
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952928,
+          "TimeAccuracy": 145000000,
+          "Resources": {
+            "5700": 1010
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952928,
+          "TimeAccuracy": 145000000,
+          "Resources": {
+            "5700": 0
+          }
+        }
+      ],
+      "CRC": 639052495
+    },
+    {
+      "Safety": true,
+      "NodeID": 520005,
+      "TimeStamp": 1652952928,
+      "TimeAccuracy": 145000000,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952928,
+          "TimeAccuracy": 145000000,
+          "Resources": {
+            "5527": "9111111111111111111305"
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952928,
+          "TimeAccuracy": 145000000,
+          "Resources": {
+            "5700": 1020
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952928,
+          "TimeAccuracy": 145000000,
+          "Resources": {
+            "5700": 0
+          }
+        }
+      ],
+      "CRC": 1540858291
+    },
+    {
+      "Safety": true,
+      "NodeID": 999999999999999,
+      "TimeStamp": 1652952928,
+      "TimeAccuracy": 145000000,
+      "Sensors-Actuators": [
+        {
+          "SensorID": 3341,
+          "TimeStamp": 1652952928,
+          "TimeAccuracy": 145000000,
+          "Resources": {
+            "5527": "9111111111111111111301"
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952928,
+          "TimeAccuracy": 145000000,
+          "Resources": {
+            "5700": 1000
+          }
+        },
+        {
+          "SensorID": 3300,
+          "TimeStamp": 1652952928,
+          "TimeAccuracy": 145000000,
+          "Resources": {
+            "5700": 0
+          }
+        }
+      ],
+      "CRC": 617469649
+    }
+  ],
+  "CRC": 2126693315
+}
